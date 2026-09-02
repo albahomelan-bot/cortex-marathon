@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Шлях Інвестора | Андрій Яцечко — Марафон $1000/міс</title>
+  
+  <!-- SEO & OpenGraph -->
+  <meta name="description" content="Відкритий щоденник інженера-електрика Андрія Яцечка. Публічний експеримент: вихід на $1000/міс пасиву на споті без ризику ліквідації.">
+  <meta property="og:title" content="Шлях Інвестора | Андрій Яцечко — Марафон $1000/міс">
+  <meta property="og:description" content="Публічний експеримент: як інженер-електрик створює пасивний дохід на споті Bybit без посередників. Запусти $10 000 Демо безкоштовно.">
+  <meta property="og:image" content="assets/andrii_photo.jpg">
+  <meta property="og:type" content="website">
+
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧭</text></svg>">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="background-blobs">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+  </div>
+
+  <main class="app-container">
+    
+    <!-- 1. Hero Profile Card -->
+    <header class="profile-card glass-card">
+      <div class="avatar-wrapper">
+        <div class="avatar-ring"></div>
+        <img src="assets/andrii_photo.jpg" alt="Андрій Яцечко" class="avatar-img">
+        <span class="status-badge" title="Експеримент активний">
+          <span class="pulse-dot"></span> <span id="badge-status">LIVE • День 2</span>
+        </span>
+      </div>
+
+      <div class="profile-info">
+        <div class="role-pill">
+          <span class="bolt">⚡</span> Інженер-електрик • Живу біля моря 🌊
+        </div>
+        <h1 class="profile-name">Андрій Яцечко</h1>
+        <p class="profile-tagline">
+          Публічний експеримент: вихід на <strong>$1000/міс</strong> пасивного доходу на споті Bybit без ризику ліквідації.
+        </p>
+      </div>
+    </header>
+
+    <!-- 2. Live Stats Counter (Marathon Tracker) -->
+    <section class="stats-section glass-card">
+      <div class="section-badge">📊 ФІКСАЦІЯ РЕЗУЛЬТАТІВ (<span id="stats-time-label">ОБ 11:00</span>)</div>
+      
+      <div class="stats-grid">
+        <div class="stat-box">
+          <span class="stat-label">Вчора (<span id="stat-yesterday-date">1 вер</span>)</span>
+          <span class="stat-value text-green" id="stat-yesterday">+$54 <small>USDT</small></span>
+          <span class="stat-sub">🔥 Активна сітка</span>
+        </div>
+
+        <div class="stat-box">
+          <span class="stat-label">Сьогодні</span>
+          <span class="stat-value text-green" id="stat-today">+$14 <small>USDT</small></span>
+          <span class="stat-sub">🚀 На автоматі</span>
+        </div>
+
+        <div class="stat-box stat-box-main">
+          <span class="stat-label">Сумарний дохід</span>
+          <span class="stat-value text-gold" id="stat-total">+$431 <small>USDT</small></span>
+          <span class="stat-sub">💰 Складний відсоток</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Primary Massive Action Button (Free $10k Demo) -->
+    <section class="primary-cta-section">
+      <a href="https://telegram.me/mycortxBot?start=rfc5145b7a" target="_blank" rel="noopener" class="main-button pulse-btn">
+        <div class="btn-glow"></div>
+        <div class="btn-content">
+          <span class="btn-icon">🎁</span>
+          <div class="btn-text">
+            <span class="btn-title">Запустити $10 000 Демо</span>
+            <span class="btn-subtitle">Безкоштовно за 2 кліки в Telegram</span>
+          </div>
+          <span class="btn-arrow">➔</span>
+        </div>
+      </a>
+      <p class="cta-guarantee">🛡️ Без внесення власних коштів • Тест механіки зсередини</p>
+    </section>
+
+    <!-- 4. 3 Security Pillars -->
+    <section class="security-section glass-card">
+      <h2 class="section-title">🛡️ Чому це безпечно на 100%?</h2>
+      
+      <div class="security-list">
+        <div class="security-item">
+          <div class="sec-icon">🏦</div>
+          <div class="sec-text">
+            <strong>Гроші завжди у вас:</strong>
+            <p>Капітал зберігається на вашому особистому біржовому акаунті Bybit або OKX.</p>
+          </div>
+        </div>
+
+        <div class="security-item">
+          <div class="sec-icon">🔒</div>
+          <div class="sec-text">
+            <strong>Без права виводу:</strong>
+            <p>Алгоритм підключається через API тільки для виставлення лімітних ордерів.</p>
+          </div>
+        </div>
+
+        <div class="security-item">
+          <div class="sec-icon">⚡</div>
+          <div class="sec-text">
+            <strong>Лише чистий СПОТ:</strong>
+            <p>Жодних ф'ючерсів, плечей та ліквідацій депозиту (як надійний запобіжник у схемі).</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. Ecosystem & Social Links (Multi-Link) -->
+    <section class="links-section">
+      <h2 class="section-title text-center">🧭 Мої медіа та щоденник</h2>
+
+      <div class="links-grid">
+        
+        <!-- Telegram Channel: Shlyah Investora -->
+        <a href="https://t.me/shlyah_investora" target="_blank" rel="noopener" class="link-card glass-card">
+          <div class="link-icon tg-icon">🧭</div>
+          <div class="link-info">
+            <span class="link-title">Telegram: Шлях Інвестора</span>
+            <span class="link-desc">Щоденні звіти, математика та результати</span>
+          </div>
+          <span class="link-badge">Щоденник</span>
+        </a>
+
+        <!-- TikTok Account -->
+        <a href="https://vt.tiktok.com/ZSVwKdWh3/" target="_blank" rel="noopener" class="link-card glass-card">
+          <div class="link-icon tiktok-icon">🎬</div>
+          <div class="link-info">
+            <span class="link-title">TikTok: Відео-експеримент</span>
+            <span class="link-desc">Короткі ролики та живі звіти щодня</span>
+          </div>
+          <span class="link-badge">Відео</span>
+        </a>
+
+        <!-- Instagram Account -->
+        <a href="https://www.instagram.com/andrii.investor.way/" target="_blank" rel="noopener" class="link-card glass-card">
+          <div class="link-icon ig-icon">📸</div>
+          <div class="link-info">
+            <span class="link-title">Instagram: Reels & Сторис</span>
+            <span class="link-desc">@andrii.investor.way • Життя біля моря</span>
+          </div>
+          <span class="link-badge">Reels</span>
+        </a>
+
+        <!-- Telegram News Channel -->
+        <a href="https://t.me/cortex_smart_trade" target="_blank" rel="noopener" class="link-card glass-card">
+          <div class="link-icon news-icon">⚡</div>
+          <div class="link-info">
+            <span class="link-title">Telegram: Cortex Smart Trade</span>
+            <span class="link-desc">Аналітика та оперативні новини ринку</span>
+          </div>
+          <span class="link-badge">Новини</span>
+        </a>
+
+        <!-- Direct Contact: Telegram Alba -->
+        <a href="https://t.me/albaRoyalQ" target="_blank" rel="noopener" class="link-card glass-card contact-card">
+          <div class="link-icon dm-icon">💬</div>
+          <div class="link-info">
+            <span class="link-title">Задати питання особисто</span>
+            <span class="link-desc">Прямий чат з Андрієм Яцечком (@albaRoyalQ)</span>
+          </div>
+          <span class="link-badge badge-green">На зв'язку</span>
+        </a>
+
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <p class="footer-copy">© 2026 Андрій Яцечко • Шлях Інвестора</p>
+      <p class="footer-disclaimer">Особистий публічний експеримент. Не є фінансовою порадою.</p>
+    </footer>
+
+  </main>
+
+  <script>
+    // Dynamic Stats Loader from stats.json
+    async function loadLiveStats() {
+      try {
+        const response = await fetch('stats.json?t=' + new Date().getTime());
+        if (!response.ok) return;
+        const data = await response.json();
+        
+        if (data.dayNumber) {
+          const badge = document.getElementById('badge-status');
+          if (badge) badge.innerText = `LIVE • День ${data.dayNumber}`;
+        }
+        if (data.yesterdayDate) {
+          const yDate = document.getElementById('stat-yesterday-date');
+          if (yDate) yDate.innerText = data.yesterdayDate;
+        }
+        if (data.yesterdayProfit) {
+          const el = document.getElementById('stat-yesterday');
+          if (el) el.innerHTML = `${data.yesterdayProfit} <small>USDT</small>`;
+        }
+        if (data.todayProfit) {
+          const el = document.getElementById('stat-today');
+          if (el) el.innerHTML = `${data.todayProfit} <small>USDT</small>`;
+        }
+        if (data.totalProfit) {
+          const el = document.getElementById('stat-total');
+          if (el) el.innerHTML = `${data.totalProfit} <small>USDT</small>`;
+        }
+      } catch (e) {
+        console.log('Using static default stats');
+      }
+    }
+    loadLiveStats();
+  </script>
+</body>
+</html>
