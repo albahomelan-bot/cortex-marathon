@@ -246,6 +246,11 @@
 
     <!-- Footer -->
     <footer class="app-footer">
+      <div class="footer-views-badge" id="footer-views-badge">
+        <span class="views-icon">👁️</span>
+        <span class="views-count" id="site-views-count">...</span>
+        <span class="views-label">переглядів</span>
+      </div>
       <p class="footer-copy">© 2026 Андрій Яцечко • Шлях Інвестора</p>
       <p class="footer-disclaimer">Особистий публічний експеримент. Не є інвестиційною порадою.</p>
     </footer>
@@ -285,6 +290,31 @@
       }
     }
     loadLiveStats();
+
+    // Live Views Tracker & Counter
+    async function trackAndLoadViews() {
+      try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const sourceParam = urlParams.get('utm_source') || urlParams.get('source') || '';
+        const referrer = document.referrer || '';
+        
+        let endpoint = 'https://n8n.alba-automation.top/webhook/marathon-view?';
+        if (sourceParam) endpoint += 'source=' + encodeURIComponent(sourceParam) + '&';
+        if (referrer) endpoint += 'ref=' + encodeURIComponent(referrer);
+        
+        const res = await fetch(endpoint);
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.views) {
+            const el = document.getElementById('site-views-count');
+            if (el) el.innerText = Number(data.views).toLocaleString('uk-UA');
+          }
+        }
+      } catch (err) {
+        console.log('Views tracking offline');
+      }
+    }
+    trackAndLoadViews();
   </script>
 </body>
 </html>
