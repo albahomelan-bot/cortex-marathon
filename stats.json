@@ -1,9 +1,9 @@
 {
-  "dayNumber": 1,
-  "dateLabel": "1 жовтня",
-  "yesterdayDate": "30 вер",
-  "yesterdayProfit": "+$65",
-  "todayProfit": "+$11",
-  "totalProfit": "+$359",
+  "dayNumber": 2,
+  "dateLabel": "2 жовтня",
+  "yesterdayDate": "1 жов",
+  "yesterdayProfit": "+$28",
+  "todayProfit": "+$25",
+  "totalProfit": "+$53",
   "status": "LIVE"
 }
