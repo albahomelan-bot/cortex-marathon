@@ -34,8 +34,8 @@ if (Test-Path $statsFile) {
 
 # Create Form
 $form = New-Object System.Windows.Forms.Form
-$form.Text = "Шлях Інвестора • Оновлення сайту марафону"
-$form.Size = New-Object System.Drawing.Size(460, 480)
+$form.Text = "Шлях Інвестора • Оновлення сайту та Telegram"
+$form.Size = New-Object System.Drawing.Size(460, 520)
 $form.StartPosition = "CenterScreen"
 $form.FormBorderStyle = "FixedDialog"
 $form.MaximizeBox = $false
@@ -86,23 +86,33 @@ function Add-Field($labelText, $defaultValue, $topPos) {
     return $txt
 }
 
-$txtYesterday = Add-Field "1. Дохід за вчора (USDT) [$yesterdayDate]:" $prev.yesterdayProfit 80
-$txtToday = Add-Field "2. Дохід на ранок сьогодні (USDT):" $prev.todayProfit 145
-$txtMonth = Add-Field "3. За поточний місяць листопад (USDT):" $prev.monthProfit 210
-$txtTotal = Add-Field "4. Загальний накопичений результат (USDT):" $prev.totalProfit 275
+$txtYesterday = Add-Field "1. Дохід за вчора (USDT) [$yesterdayDate]:" $prev.yesterdayProfit 75
+$txtToday = Add-Field "2. Дохід на ранок сьогодні (USDT):" $prev.todayProfit 135
+$txtMonth = Add-Field "3. За поточний місяць листопад (USDT):" $prev.monthProfit 195
+$txtTotal = Add-Field "4. Загальний накопичений результат (USDT):" $prev.totalProfit 255
+
+# Checkbox Telegram
+$chkTelegram = New-Object System.Windows.Forms.CheckBox
+$chkTelegram.Text = "📢 Опублікувати звіт зі скриншотами в Telegram"
+$chkTelegram.Font = New-Object System.Drawing.Font("Segoe UI", 9, [System.Drawing.FontStyle]::Bold)
+$chkTelegram.ForeColor = [System.Drawing.Color]::FromArgb(250, 204, 21)
+$chkTelegram.Location = New-Object System.Drawing.Point(25, 320)
+$chkTelegram.Size = New-Object System.Drawing.Size(390, 25)
+$chkTelegram.Checked = $true
+$form.Controls.Add($chkTelegram)
 
 # Status Label
 $lblStatus = New-Object System.Windows.Forms.Label
 $lblStatus.Text = ""
-$lblStatus.Font = $fontRegular
+$lblStatus.Font = New-Object System.Drawing.Font("Segoe UI", 9)
 $lblStatus.ForeColor = [System.Drawing.Color]::FromArgb(34, 197, 94)
-$lblStatus.Location = New-Object System.Drawing.Point(25, 345)
-$lblStatus.Size = New-Object System.Drawing.Size(390, 25)
+$lblStatus.Location = New-Object System.Drawing.Point(25, 350)
+$lblStatus.Size = New-Object System.Drawing.Size(390, 20)
 $form.Controls.Add($lblStatus)
 
 # Button Save
 $btnSave = New-Object System.Windows.Forms.Button
-$btnSave.Text = "🚀 ОНОВИТИ САЙТ НА CLOUDFLARE"
+$btnSave.Text = "🚀 ОНОВИТИ САЙТ ТА ОПУБЛІКУВАТИ"
 $btnSave.Font = New-Object System.Drawing.Font("Segoe UI", 10, [System.Drawing.FontStyle]::Bold)
 $btnSave.Location = New-Object System.Drawing.Point(25, 375)
 $btnSave.Size = New-Object System.Drawing.Size(390, 42)
@@ -152,14 +162,22 @@ $btnSave.Add_Click({
         & git commit -m $msg 2>&1 | Out-Null
         $pushOut = & git push origin main 2>&1
         
+        $tgInfo = ""
+        if ($chkTelegram.Checked) {
+            $lblStatus.Text = "📢 Публікація звіту та скриншотів у Telegram..."
+            $form.Refresh()
+            & node publish_telegram_report.js 2>&1 | Out-Null
+            $tgInfo = "`n`n📢 Звіт та скриншоти опубліковано в Telegram-канал та супергрупу!"
+        }
+
         $lblStatus.ForeColor = [System.Drawing.Color]::FromArgb(34, 197, 94)
-        $lblStatus.Text = "✅ Успішно відправлено на Cloudflare!"
-        [System.Windows.Forms.MessageBox]::Show("✅ Сайт успішно оновлено!`n`nПоказники зафіксовано:`n• Вчора: $yProfit`n• Сьогодні: $tProfit`n• Місяць: $mProfit`n• Разом: $totProfit`n`nCloudflare Pages оновить сторінку за 30-40 секунд:`nhttps://cortex-marathon.pages.dev", "Успіх!", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information)
+        $lblStatus.Text = "✅ Успішно оновлено!"
+        [System.Windows.Forms.MessageBox]::Show("✅ Сайт успішно оновлено!`n`nПоказники зафіксовано:`n• Вчора: $yProfit`n• Сьогодні: $tProfit`n• Місяць: $mProfit`n• Разом: $totProfit$tgInfo`n`nCloudflare Pages оновить сторінку за 30-40 секунд:`nhttps://cortex-marathon.pages.dev", "Успіх!", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information)
         $form.Close()
     } catch {
         [System.Windows.Forms.MessageBox]::Show("Помилка при відправці: $_", "Помилка", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Error)
         $btnSave.Enabled = $true
-        $btnSave.Text = "🚀 ОНОВИТИ САЙТ НА CLOUDFLARE"
+        $btnSave.Text = "🚀 ОНОВИТИ САЙТ ТА ОПУБЛІКУВАТИ"
     }
 })
 
