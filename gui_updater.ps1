@@ -122,7 +122,7 @@ $btnSave.Add_Click({
     function Format-Profit($val, $fallback) {
         $clean = $val.Trim().Replace("$", "").Replace("+", "")
         if ([string]::IsNullOrWhiteSpace($clean)) { $clean = $fallback.Replace("$", "").Replace("+", "") }
-        return "+$$clean"
+        return "+$" + $clean
     }
 
     $yProfit = Format-Profit $txtYesterday.Text $prev.yesterdayProfit
