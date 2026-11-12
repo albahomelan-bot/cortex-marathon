@@ -166,8 +166,16 @@ $btnSave.Add_Click({
         if ($chkTelegram.Checked) {
             $lblStatus.Text = "📢 Публікація звіту та скриншотів у Telegram..."
             $form.Refresh()
-            & node publish_telegram_report.js 2>&1 | Out-Null
-            $tgInfo = "`n`n📢 Звіт та скриншоти опубліковано в Telegram-канал та супергрупу!"
+            $tgOut = & node publish_telegram_report.js 2>&1
+            $photoCount = 0
+            if ($tgOut -match "Found (\d+) screenshot") {
+                $photoCount = [int]$matches[1]
+            }
+            if ($photoCount -gt 0) {
+                $tgInfo = "`n`n📢 Звіт та $photoCount скриншот(и) опубліковано в Telegram-канал та супергрупу!"
+            } else {
+                $tgInfo = "`n`n📢 Текстовий звіт опубліковано в Telegram (нових скриншотів не знайдено)."
+            }
         }
 
         $lblStatus.ForeColor = [System.Drawing.Color]::FromArgb(34, 197, 94)
