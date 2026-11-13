@@ -3,25 +3,24 @@ const path = require('path');
 
 const BOT_TOKEN = '9222643279:AAGkXw00L6kFfBno8hj8hIILwVJVb90C6fE';
 const statsFile = path.join(__dirname, 'stats.json');
+const dedicatedFolder = path.join(__dirname, 'screenshots');
+const archiveFolder = path.join(dedicatedFolder, 'archive');
 
-// Folders to search for screenshots
-const searchFolders = [
-  path.join(__dirname, 'screenshots'),
+// Other fallback folders to check
+const fallbackFolders = [
   'D:\\Cortex\\видео по базилю\\ВХОДЯЩИЕ_ВИДЕО',
   'D:\\Cortex\\видео по базилю\\ВХОДЯЩИЕ_ВИДЕО\\november26',
-  'D:\\Cortex\\видео по базилю\\ВХОДЯЩИЕ_ВИДЕО\\011126',
   'E:\\ВХОДЯЩИЕ_ВИДЕО',
   'E:\\ВХОДЯЩИЕ_ВИДЕО\\1 мій запис (відео для монтажу)',
   'C:\\Users\\Admin\\Documents\\antigravity\\AI-Montazher\\ЗАНЕСИ-СЮДИ\\1 мій запис (відео для монтажу)',
-  'C:\\Users\\Admin\\Documents\\antigravity\\AI-Montazher\\ЗАНЕСИ-СЮДИ\\4 мої картинки й відео (для вставок)',
   'C:\\Users\\Admin\\Pictures\\Screenshots',
   'C:\\Users\\Admin\\Desktop'
 ];
 
-// Patterns to exclude (covers, icons, branding, avatars)
+// Patterns to exclude (covers, icons, branding, avatars, reactions)
 const excludePatterns = [
   'cover', 'character', 'sheet', 'logo', 'avatar', 'scam', 'vpo', 'itsmy', 
-  'thumb', 'banner', 'stickers', 'photo-', '.rendered_history'
+  'thumb', 'banner', 'stickers', 'photo-', '.rendered_history', 'вебінар', 'афіша'
 ];
 
 function isExcluded(fileName) {
@@ -32,14 +31,50 @@ function isExcluded(fileName) {
 function getTodayScreenshots() {
   const validExtensions = ['.jpg', '.jpeg', '.png', '.webp'];
   const now = Date.now();
-  const maxAgeMs = 48 * 60 * 60 * 1000; // Prefer last 48 hours
+  const MAX_AGE_HOURS = 36; // СТРОГО не старше 36 часов! Старые скриншоты игнорируются на 100%
+  const maxAgeMs = MAX_AGE_HOURS * 60 * 60 * 1000;
 
-  const candidates = [];
+  // 1. Приоритет №1: Выделенная папка "СКРИНШОТИ_МАРАФОНУ"
+  if (fs.existsSync(dedicatedFolder)) {
+    try {
+      const files = fs.readdirSync(dedicatedFolder, { withFileTypes: true });
+      const dedicatedFiles = [];
 
-  for (const folder of searchFolders) {
+      for (const dirent of files) {
+        if (!dirent.isFile()) continue;
+        const name = dirent.name;
+        const ext = path.extname(name).toLowerCase();
+        if (!validExtensions.includes(ext)) continue;
+        if (isExcluded(name)) continue;
+
+        const fullPath = path.join(dedicatedFolder, name);
+        try {
+          const stat = fs.statSync(fullPath);
+          dedicatedFiles.push({
+            name,
+            fullPath,
+            mtimeMs: stat.mtimeMs
+          });
+        } catch (e) {}
+      }
+
+      // Если в папке screenshots что-то лежит — берем ТОЛЬКО оттуда!
+      if (dedicatedFiles.length > 0) {
+        dedicatedFiles.sort((a, b) => b.mtimeMs - a.mtimeMs);
+        console.log(`[Screenshots] Found ${dedicatedFiles.length} file(s) in dedicated folder СКРИНШОТИ_МАРАФОНУ.`);
+        return dedicatedFiles.slice(0, 2).map(s => s.fullPath);
+      }
+    } catch (e) {
+      console.warn('[Screenshots] Warning reading dedicated folder:', e.message);
+    }
+  }
+
+  // 2. Приоритет №2: Поиск в общих папках ТОЛЬКО СВЕЖИХ файлов (за последние 36 часов)
+  console.log(`[Screenshots] Dedicated folder empty. Scanning other folders for FRESH screenshots (<${MAX_AGE_HOURS}h)...`);
+  const freshCandidates = [];
+
+  for (const folder of fallbackFolders) {
     if (!fs.existsSync(folder)) continue;
-
-    const isDedicatedScreenshots = folder.toLowerCase().includes('screenshots');
     const isDesktop = folder.toLowerCase().endsWith('desktop');
 
     try {
@@ -47,7 +82,6 @@ function getTodayScreenshots() {
 
       for (const dirent of files) {
         if (!dirent.isFile()) continue;
-
         const name = dirent.name;
         const ext = path.extname(name).toLowerCase();
         if (!validExtensions.includes(ext)) continue;
@@ -55,15 +89,13 @@ function getTodayScreenshots() {
 
         const lowerName = name.toLowerCase();
 
-        // On desktop, only pick files that look like screenshots or photos
+        // На рабочем столе смотрим только файлы со специфическими именами
         if (isDesktop) {
           const hasKeyword = lowerName.includes('screen') || 
                              lowerName.includes('скрин') || 
                              lowerName.includes('image_') || 
                              lowerName.includes('photo_') || 
-                             lowerName.includes('img_') ||
                              lowerName.includes('cortex') ||
-                             lowerName.includes('binance') ||
                              lowerName.includes('марафон');
           if (!hasKeyword) continue;
         }
@@ -76,38 +108,27 @@ function getTodayScreenshots() {
           continue;
         }
 
-        // Priority calculation
-        let priority = 1;
-        const isRecent = (now - stat.mtimeMs) <= maxAgeMs;
-
-        if (isDedicatedScreenshots) {
-          priority += 50; // Files in screenshots/ have highest priority
-        }
-        if (lowerName.includes('screen') || lowerName.includes('скрин') || lowerName.includes('марафон')) {
-          priority += 30;
-        }
-        if (isRecent) {
-          priority += 20;
+        const ageMs = now - stat.mtimeMs;
+        // ЖЕЛЕЗНЫЙ ФИЛЬТР: файл обязан быть свежим! Старье от прошлых дней отсекается намертво
+        if (ageMs > maxAgeMs) {
+          continue;
         }
 
-        candidates.push({
+        freshCandidates.push({
           name,
           fullPath,
           size: stat.size,
-          mtime: stat.mtime,
           mtimeMs: stat.mtimeMs,
-          priority
+          ageHours: Math.round(ageMs / 3600000)
         });
       }
-    } catch (err) {
-      console.warn(`Warning: Could not read folder ${folder}:`, err.message);
-    }
+    } catch (err) {}
   }
 
-  // Deduplicate by size & name (in case same file exists in multiple views)
+  // Убираем дубликаты
   const unique = [];
   const seen = new Set();
-  for (const c of candidates) {
+  for (const c of freshCandidates) {
     const key = `${c.name}_${c.size}`;
     if (!seen.has(key)) {
       seen.add(key);
@@ -115,20 +136,44 @@ function getTodayScreenshots() {
     }
   }
 
-  // Sort by priority descending, then by mtime descending
-  unique.sort((a, b) => {
-    if (b.priority !== a.priority) {
-      return b.priority - a.priority;
-    }
-    return b.mtimeMs - a.mtimeMs;
-  });
+  // Сортируем от самых новых к более старым
+  unique.sort((a, b) => b.mtimeMs - a.mtimeMs);
 
-  const selected = unique.slice(0, 2).map(s => s.fullPath);
-  return selected;
+  if (unique.length === 0) {
+    console.log('[Screenshots] No fresh screenshots (<36h) found anywhere.');
+    return [];
+  }
+
+  console.log(`[Screenshots] Found ${unique.length} fresh screenshot(s):`);
+  unique.forEach(u => console.log(`  • ${u.name} (age: ${u.ageHours}h ago)`));
+
+  return unique.slice(0, 2).map(s => s.fullPath);
+}
+
+function archiveSentScreenshots(photos) {
+  if (!photos || photos.length === 0) return;
+  try {
+    const today = new Date().toISOString().slice(0, 10);
+    const targetDir = path.join(archiveFolder, today);
+    if (!fs.existsSync(targetDir)) {
+      fs.mkdirSync(targetDir, { recursive: true });
+    }
+
+    for (const p of photos) {
+      // Архивируем только те, что лежали непосредственно в dedicatedFolder
+      if (path.dirname(p).toLowerCase() === dedicatedFolder.toLowerCase()) {
+        const dest = path.join(targetDir, path.basename(p));
+        fs.renameSync(p, dest);
+        console.log(`[Archive] Moved ${path.basename(p)} -> archive/${today}`);
+      }
+    }
+  } catch (err) {
+    console.warn('[Archive] Could not archive screenshots:', err.message);
+  }
 }
 
 async function sendReport(chatId, threadId, captionText, photos) {
-  if (photos.length > 0) {
+  if (photos && photos.length > 0) {
     const form = new FormData();
     form.append('chat_id', chatId.toString());
     if (threadId) {
@@ -217,11 +262,14 @@ async function main() {
   console.log('Sending to Supergroup Hub Topic 6...');
   const resHub = await sendReport(HUB_GROUP_ID, TOPIC_MARATHON, captionText, photos);
   console.log('Hub:', resHub.ok ? 'SUCCESS' : resHub);
+
+  // Перемещаем отправленные файлы в архив, чтобы не дублировались
+  archiveSentScreenshots(photos);
 }
 
 // Allow importing or direct execution
 if (require.main === module) {
   main().catch(console.error);
 } else {
-  module.exports = { getTodayScreenshots };
+  module.exports = { getTodayScreenshots, archiveSentScreenshots };
 }
