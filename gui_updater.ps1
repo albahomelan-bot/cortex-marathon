@@ -166,10 +166,12 @@ $btnSave.Add_Click({
         if ($chkTelegram.Checked) {
             $lblStatus.Text = "📢 Публікація звіту та скриншотів у Telegram..."
             $form.Refresh()
-            $tgOut = & node publish_telegram_report.js 2>&1
+            $tgRaw = & node publish_telegram_report.js 2>&1
+            $tgOut = ($tgRaw | Out-String)
             $photoCount = 0
-            if ($tgOut -match "Found (\d+) screenshot") {
-                $photoCount = [int]$matches[1]
+            $match = [regex]::Match($tgOut, "Found (\d+) screenshot")
+            if ($match.Success) {
+                $photoCount = [int]$match.Groups[1].Value
             }
             if ($photoCount -gt 0) {
                 $tgInfo = "`n`n📢 Звіт та $photoCount скриншот(и) опубліковано в Telegram-канал та супергрупу!"
