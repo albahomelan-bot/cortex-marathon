@@ -253,15 +253,15 @@ async function main() {
 
   const CHANNEL_ID = -1004350292111;
   const HUB_GROUP_ID = -1004400783965;
-  const TOPIC_MARATHON = 6;
+  const TOPIC_MARATHON = 2; // 🧭 ШЛЯХ ИНВЕСТОРА (Дневник)
 
   console.log('Sending to Channel...');
   const resChan = await sendReport(CHANNEL_ID, null, captionText, photos);
   console.log('Channel:', resChan.ok ? 'SUCCESS' : resChan);
 
-  console.log('Sending to Supergroup Hub Topic 6...');
+  console.log('Sending to Supergroup Hub Topic 2 (Дневник)...');
   const resHub = await sendReport(HUB_GROUP_ID, TOPIC_MARATHON, captionText, photos);
-  console.log('Hub:', resHub.ok ? 'SUCCESS' : resHub);
+  console.log('Hub (Дневник):', resHub.ok ? 'SUCCESS' : resHub);
 
   // Перемещаем отправленные файлы в архив, чтобы не дублировались
   archiveSentScreenshots(photos);
