@@ -1,9 +1,9 @@
 {
-    "dayNumber":  80,
-    "dateLabel":  "25 листопада",
-    "yesterdayDate":  "24 лис",
-    "yesterdayProfit":  "+$o",
-    "todayProfit":  "+$00",
+    "dayNumber":  81,
+    "dateLabel":  "26 листопада",
+    "yesterdayDate":  "25 лис",
+    "yesterdayProfit":  "+$0",
+    "todayProfit":  "+$0",
     "monthProfit":  "+$62",
     "totalProfit":  "+$927",
     "status":  "LIVE"
